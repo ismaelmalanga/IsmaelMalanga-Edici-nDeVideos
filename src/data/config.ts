@@ -53,6 +53,6 @@ export const VIDEOS = [
 ];
 
 export const HERO_VIDEO = {
-  src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789709747/Ismael_Malanga_Editor_de_Videos_2026.mp4",
-  poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789709946/Editor_Ismael_Malanga.png",
+  src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790114211/temporal.mp4",
+  poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1790114276/temp_2.png",
 };
