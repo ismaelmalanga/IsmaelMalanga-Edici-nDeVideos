@@ -1,9 +1,18 @@
 ---
 import { SITE, WA_URL, HERO_VIDEO } from "../data/config";
-import { cldVideo, cldImage, VIDEO_PREVIEW } from "../lib/media";
+import {
+  cldVideo,
+  cldImage,
+  cldImageSrcset,
+  VIDEO_PREVIEW,
+  VIDEO_PREVIEW_MOBILE,
+  POSTER_SIZES_HERO,
+} from "../lib/media";
 
 const heroSrc = cldVideo(HERO_VIDEO.src, VIDEO_PREVIEW);
-const heroPoster = cldImage(HERO_VIDEO.poster);
+const heroSrcMobile = cldVideo(HERO_VIDEO.src, VIDEO_PREVIEW_MOBILE);
+const heroPoster = cldImage(HERO_VIDEO.poster, 360);
+const heroPosterSrcset = cldImageSrcset(HERO_VIDEO.poster);
 ---
 
 <section class="hero">
@@ -40,19 +49,29 @@ const heroPoster = cldImage(HERO_VIDEO.poster);
 
     <!-- Columna video -->
     <div class="hero__video-wrap reveal delay-300">
-      <div class="hero__phone-frame">
+      <div class="hero__phone-frame" id="hero-phone">
+        <img
+          class="hero__poster"
+          src={heroPoster}
+          srcset={heroPosterSrcset}
+          sizes={POSTER_SIZES_HERO}
+          width="300"
+          height="533"
+          alt=""
+          decoding="async"
+          fetchpriority="high"
+        />
         <video
           class="hero__video"
           id="hero-video"
           data-src={heroSrc}
-          poster={heroPoster}
+          data-src-mobile={heroSrcMobile}
           muted
           loop
           playsinline
           preload="none"
           aria-label="Muestra de edición de video"
         ></video>
-        <!-- Overlay sutil con el nombre en el video -->
       </div>
       <!-- Decoración editorial — línea vertical -->
       <div class="hero__deco-line" aria-hidden="true"></div>
@@ -143,14 +162,28 @@ const heroPoster = cldImage(HERO_VIDEO.poster);
   box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
 }
 
+.hero__poster,
 .hero__video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* Placeholder visual cuando no hay video */
-.hero__video:not([src]), .hero__video[src=""] {
+.hero__poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.hero__phone-frame.is-playing .hero__poster {
+  opacity: 0;
+}
+
+.hero__video {
+  position: relative;
+  z-index: 0;
   background: var(--bg-3);
 }
 
@@ -251,23 +284,33 @@ const heroPoster = cldImage(HERO_VIDEO.poster);
 
 <script>
   const video = document.getElementById("hero-video") as HTMLVideoElement | null;
+  const frame = document.getElementById("hero-phone");
   if (video) {
-    const src = video.dataset.src ?? "";
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const connection = (navigator as Navigator & {
       connection?: { saveData?: boolean; effectiveType?: string };
     }).connection;
     const saveData = Boolean(connection?.saveData);
-    const slowNet = ["slow-2g", "2g"].includes(connection?.effectiveType ?? "");
+    const slowNet = ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
+    const autoplay = !reduceMotion && !saveData && !slowNet && !isMobile;
+
+    const previewSrc = () =>
+      (isMobile ? video.dataset.srcMobile : video.dataset.src) || video.dataset.src || "";
 
     const loadAndPlay = () => {
-      if (!src || video.getAttribute("src")) return;
-      video.src = src;
-      video.preload = "metadata";
-      video.play().catch(() => {});
+      const src = previewSrc();
+      if (!src) return;
+      if (video.getAttribute("src") !== src) {
+        video.src = src;
+        video.preload = "metadata";
+      }
+      video.play()
+        .then(() => frame?.classList.add("is-playing"))
+        .catch(() => {});
     };
 
-    if (!reduceMotion && !saveData && !slowNet) {
+    if (autoplay) {
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -281,6 +324,8 @@ const heroPoster = cldImage(HERO_VIDEO.poster);
         { rootMargin: "80px" }
       );
       io.observe(video);
+    } else {
+      frame?.addEventListener("click", loadAndPlay, { once: true });
     }
   }
 </script>

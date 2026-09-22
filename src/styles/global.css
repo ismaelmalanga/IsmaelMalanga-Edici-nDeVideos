@@ -10,14 +10,14 @@
     --border:    #2A2A28;
     --text:      #F0EDE8;
     --text-2:    #9E9B96;
-    --text-3:    #5C5A57;
+    --text-3:    #7C7A77; /* aclarado de #5C5A57 para cumplir contraste AA (4.5:1) sobre --bg */
     --accent:    #E8D9C5;    /* arena cálida — firma visual */
     --accent-2:  #C4A882;    /* acento secundario */
     --white:     #FAFAF8;
   
     /* Tipografía */
-    --font-display: 'Syne', sans-serif;
-    --font-body:    'Inter', sans-serif;
+    --font-display: 'Syne', system-ui, sans-serif;
+    --font-body:    'Inter', system-ui, sans-serif;
   
     /* Escala de tipo */
     --text-xs:   0.75rem;
@@ -62,6 +62,24 @@
     --dur-slow: 500ms;
   }
   
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Syne';
+    font-style: normal;
+    font-weight: 600 800;
+    font-display: swap;
+    src: url('/fonts/syne-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
   /* ============================================================
      RESET
      ============================================================ */

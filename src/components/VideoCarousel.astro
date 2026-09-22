@@ -1,12 +1,22 @@
 ---
 import { VIDEOS } from "../data/config";
-import { cldVideo, cldImage, VIDEO_PREVIEW, VIDEO_FULL } from "../lib/media";
+import {
+  cldVideo,
+  cldImage,
+  cldImageSrcset,
+  VIDEO_PREVIEW,
+  VIDEO_PREVIEW_MOBILE,
+  VIDEO_FULL,
+  POSTER_SIZES_CAROUSEL,
+} from "../lib/media";
 
 const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
   ...v,
   preview: cldVideo(v.src, VIDEO_PREVIEW),
+  previewMobile: cldVideo(v.src, VIDEO_PREVIEW_MOBILE),
   full: cldVideo(v.src, VIDEO_FULL),
-  posterOpt: v.poster ? cldImage(v.poster) : "",
+  posterSrc: v.poster ? cldImage(v.poster, 360) : "",
+  posterSrcset: v.poster ? cldImageSrcset(v.poster) : "",
 }));
 ---
 
@@ -36,15 +46,29 @@ const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
           class="carousel__slide"
           data-index={i}
           data-src={video.preview}
+          data-src-mobile={video.previewMobile}
           data-full={video.full}
           role="group"
           aria-roledescription="diapositiva"
           aria-label={`${i + 1} de ${activeVideos.length}: ${video.title}`}
         >
           <div class="carousel__card">
+            {video.posterSrc && (
+              <img
+                class="carousel__poster"
+                src={video.posterSrc}
+                srcset={video.posterSrcset}
+                sizes={POSTER_SIZES_CAROUSEL}
+                width="260"
+                height="462"
+                alt=""
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+                fetchpriority={i === 0 ? "auto" : "low"}
+              />
+            )}
             <video
               class="carousel__video"
-              poster={video.posterOpt || undefined}
               muted
               loop
               playsinline
@@ -185,10 +209,29 @@ const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
   box-shadow: 0 24px 60px rgba(0,0,0,0.5);
 }
 
-.carousel__video {
+.carousel__poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.carousel__card.is-playing .carousel__poster {
+  opacity: 0;
+}
+
+.carousel__video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--bg-3);
 }
 
 /* Botón expandir */
@@ -374,27 +417,56 @@ const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
     let isAnimating = false;
     let inView      = false;
 
+    // Mismos criterios que el Hero: no autoplay en mobile / datos limitados /
+    // conexión lenta / reduced-motion, y servimos el video en menor resolución
+    // cuando el viewport es chico.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    const saveData = Boolean(connection?.saveData);
+    const slowNet = ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "");
+    const autoplayAllowed = !reduceMotion && !saveData && !slowNet;
+
     function getVideo(index: number): HTMLVideoElement | null {
       return slides[index]?.querySelector("video") ?? null;
     }
 
-    function playActive() {
-      if (!inView) return;
-      const video = getVideo(current);
-      const slide = slides[current];
+    function getCard(index: number): HTMLElement | null {
+      return slides[index]?.querySelector(".carousel__card") ?? null;
+    }
+
+    function srcFor(slide: HTMLElement): string {
+      return (isMobile ? slide.dataset.srcMobile : slide.dataset.src) || slide.dataset.src || "";
+    }
+
+    function startPlayback(index: number) {
+      const video = getVideo(index);
+      const slide = slides[index];
+      const card = getCard(index);
       if (!video || !slide) return;
-      const nextSrc = slide.dataset.src ?? "";
+      const nextSrc = srcFor(slide);
       if (video.getAttribute("src") !== nextSrc) {
         video.src = nextSrc;
       }
-      video.play().catch(() => {});
+      video.play()
+        .then(() => card?.classList.add("is-playing"))
+        .catch(() => {});
+    }
+
+    function playActive() {
+      if (!inView || !autoplayAllowed) return;
+      startPlayback(current);
     }
 
     function pauseAll() {
       slides.forEach((_, i) => {
         const v = getVideo(i);
+        const c = getCard(i);
         if (!v) return;
         v.pause();
+        c?.classList.remove("is-playing");
         if (i !== current) {
           v.removeAttribute("src");
           v.load();
@@ -433,7 +505,12 @@ const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
       const slide = (e.target as Element).closest<HTMLElement>(".carousel__slide");
       if (!slide) return;
       const idx = parseInt(slide.dataset.index ?? "0");
-      if (idx !== current) goTo(idx);
+      if (idx !== current) {
+        goTo(idx);
+      } else if (!autoplayAllowed) {
+        // Reduced-motion / datos limitados: reproducir recién al tocar el slide activo
+        startPlayback(idx);
+      }
     });
 
     document.addEventListener("keydown", (e) => {
@@ -461,6 +538,7 @@ const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
               playActive();
             } else {
               getVideo(current)?.pause();
+              getCard(current)?.classList.remove("is-playing");
             }
           });
         },
