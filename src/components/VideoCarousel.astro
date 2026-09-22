@@ -1,7 +1,13 @@
 ---
 import { VIDEOS } from "../data/config";
+import { cldVideo, cldImage, VIDEO_PREVIEW, VIDEO_FULL } from "../lib/media";
 
-const activeVideos = VIDEOS.filter(v => v.src);
+const activeVideos = VIDEOS.filter((v) => v.src).map((v) => ({
+  ...v,
+  preview: cldVideo(v.src, VIDEO_PREVIEW),
+  full: cldVideo(v.src, VIDEO_FULL),
+  posterOpt: v.poster ? cldImage(v.poster) : "",
+}));
 ---
 
 <section class="trabajos section" id="trabajos">
@@ -29,7 +35,8 @@ const activeVideos = VIDEOS.filter(v => v.src);
         <div
           class="carousel__slide"
           data-index={i}
-          data-src={video.src}
+          data-src={video.preview}
+          data-full={video.full}
           role="group"
           aria-roledescription="diapositiva"
           aria-label={`${i + 1} de ${activeVideos.length}: ${video.title}`}
@@ -37,8 +44,7 @@ const activeVideos = VIDEOS.filter(v => v.src);
           <div class="carousel__card">
             <video
               class="carousel__video"
-              src={video.src}
-              poster={video.poster || undefined}
+              poster={video.posterOpt || undefined}
               muted
               loop
               playsinline
@@ -46,7 +52,7 @@ const activeVideos = VIDEOS.filter(v => v.src);
               aria-label={video.title}
             ></video>
             <!-- Ícono expandir -->
-            <button class="carousel__expand" aria-label={`Ver ${video.title} en grande`} data-src={video.src}>
+            <button class="carousel__expand" aria-label={`Ver ${video.title} en grande`} data-src={video.full}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
                 <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
@@ -366,43 +372,33 @@ const activeVideos = VIDEOS.filter(v => v.src);
     const total     = slides.length;
     let current     = 0;
     let isAnimating = false;
+    let inView      = false;
 
-    // ---- Carrusel ----
     function getVideo(index: number): HTMLVideoElement | null {
       return slides[index]?.querySelector("video") ?? null;
     }
 
     function playActive() {
-  const video = getVideo(current);
-  const slide = slides[current];
-  if (!video || !slide) return;
-  if (!video.src || video.src !== slide.dataset.src) {
-    video.src = slide.dataset.src ?? "";
-  }
-  if (video.readyState === 0) {
-    video.preload = "auto";
-    video.load();
-    video.addEventListener("canplay", () => video.play(), { once: true });
-  } else {
-    video.play().catch(() => {});
-  }
-}
+      if (!inView) return;
+      const video = getVideo(current);
+      const slide = slides[current];
+      if (!video || !slide) return;
+      const nextSrc = slide.dataset.src ?? "";
+      if (video.getAttribute("src") !== nextSrc) {
+        video.src = nextSrc;
+      }
+      video.play().catch(() => {});
+    }
 
     function pauseAll() {
-  slides.forEach((_, i) => {
-    const v = getVideo(i);
-    if (v) {
-      v.pause();
-      v.removeAttribute("src");
-      v.load();
-    }
-  });
-}
-
-    function preloadNeighbors() {
-      [(current - 1 + total) % total, (current + 1) % total].forEach((i) => {
+      slides.forEach((_, i) => {
         const v = getVideo(i);
-        if (v && v.preload === "none") v.preload = "metadata";
+        if (!v) return;
+        v.pause();
+        if (i !== current) {
+          v.removeAttribute("src");
+          v.load();
+        }
       });
     }
 
@@ -417,7 +413,6 @@ const activeVideos = VIDEOS.filter(v => v.src);
       dots.forEach((dot, i) => {
         dot.setAttribute("aria-selected", i === current ? "true" : "false");
       });
-      preloadNeighbors();
     }
 
     function goTo(index: number) {
@@ -455,9 +450,25 @@ const activeVideos = VIDEOS.filter(v => v.src);
     }, { passive: true });
 
     render();
-    playActive();
 
-    // ---- Lightbox ----
+    const carouselRoot = document.querySelector(".carousel");
+    if (carouselRoot) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            inView = entry.isIntersecting;
+            if (inView) {
+              playActive();
+            } else {
+              getVideo(current)?.pause();
+            }
+          });
+        },
+        { rootMargin: "120px" }
+      );
+      io.observe(carouselRoot);
+    }
+
     const lightbox      = document.getElementById("lightbox") as HTMLElement;
     const lightboxVideo = document.getElementById("lightbox-video") as HTMLVideoElement;
     const closeBtn      = document.getElementById("lightbox-close");
@@ -477,7 +488,6 @@ const activeVideos = VIDEOS.filter(v => v.src);
       document.body.style.overflow = "";
     }
 
-    // Click en botón expandir
     document.querySelectorAll<HTMLElement>(".carousel__expand").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -485,8 +495,6 @@ const activeVideos = VIDEOS.filter(v => v.src);
         if (src) openLightbox(src);
       });
     });
-
- 
 
     closeBtn?.addEventListener("click", closeLightbox);
     backdrop?.addEventListener("click", closeLightbox);

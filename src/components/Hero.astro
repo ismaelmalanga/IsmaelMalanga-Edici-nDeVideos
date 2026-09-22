@@ -1,5 +1,9 @@
 ---
 import { SITE, WA_URL, HERO_VIDEO } from "../data/config";
+import { cldVideo, cldImage, VIDEO_PREVIEW } from "../lib/media";
+
+const heroSrc = cldVideo(HERO_VIDEO.src, VIDEO_PREVIEW);
+const heroPoster = cldImage(HERO_VIDEO.poster);
 ---
 
 <section class="hero">
@@ -39,12 +43,13 @@ import { SITE, WA_URL, HERO_VIDEO } from "../data/config";
       <div class="hero__phone-frame">
         <video
           class="hero__video"
-          src={HERO_VIDEO.src}
-          poster={HERO_VIDEO.poster}
-          autoplay
+          id="hero-video"
+          data-src={heroSrc}
+          poster={heroPoster}
           muted
           loop
           playsinline
+          preload="none"
           aria-label="Muestra de edición de video"
         ></video>
         <!-- Overlay sutil con el nombre en el video -->
@@ -243,3 +248,39 @@ import { SITE, WA_URL, HERO_VIDEO } from "../data/config";
   .hero__br-desktop { display: none; }
 }
 </style>
+
+<script>
+  const video = document.getElementById("hero-video") as HTMLVideoElement | null;
+  if (video) {
+    const src = video.dataset.src ?? "";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    const saveData = Boolean(connection?.saveData);
+    const slowNet = ["slow-2g", "2g"].includes(connection?.effectiveType ?? "");
+
+    const loadAndPlay = () => {
+      if (!src || video.getAttribute("src")) return;
+      video.src = src;
+      video.preload = "metadata";
+      video.play().catch(() => {});
+    };
+
+    if (!reduceMotion && !saveData && !slowNet) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              loadAndPlay();
+            } else {
+              video.pause();
+            }
+          });
+        },
+        { rootMargin: "80px" }
+      );
+      io.observe(video);
+    }
+  }
+</script>
