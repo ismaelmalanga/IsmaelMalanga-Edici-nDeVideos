@@ -38,7 +38,7 @@ const items = [
       {items.map((item, i) => (
         <div 
           class:list={["faq__item", "reveal"]} 
-          style={`transition-delay: ${(i + 1) * 100}ms; animation-delay: ${(i + 1) * 100}ms;`}
+          style={`transition-delay: ${i * 40}ms; animation-delay: ${i * 40}ms;`}
         >
           <button
             class="faq__question"

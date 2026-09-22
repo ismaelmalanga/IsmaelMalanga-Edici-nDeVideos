@@ -180,7 +180,7 @@
     opacity: 0;
     transform: translateY(30px);
     /* Usamos tu variable --ease para mantener la suavidad de la marca */
-    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
   }
   
   .reveal.is-visible {
