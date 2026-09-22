@@ -1,0 +1,188 @@
+---
+const items = [
+  {
+    q: "¿Cómo te envío el material?",
+    a: "Por WhatsApp(como documento), Google Drive o alguna plataforma como wetransfer, como te resulte más cómodo. Te indico exactamente qué necesito antes de arrancar.",
+  },
+  {
+    q: "¿Qué necesito enviarte para empezar?",
+    a: "El video/imagen sin editar (o la selección de clips), cualquier referencia de estilo que te guste, y si tenés una música en mente o voz que quieras agregar, mejor. Con eso ya puedo arrancar.",
+  },
+  {
+    q: "¿Cuánto tarda la edición?",
+    a: "Depende del plan y el material. Te doy un tiempo estimado antes de arrancar, según lo que necesites.", // <-- COMPLETAR con tiempos reales
+  },
+  {
+    q: "¿Puedo pedir cambios?",
+    a: "Sí. Si algo no quedó como esperabas, hacemos ajustes ligeros. Los detalles de revisiones los coordinamos por WhatsApp.", // <-- COMPLETAR si tenés política de revisiones
+  },
+  {
+    q: "¿Editás solamente Reels, TikToks & Shorts?",
+    a: "Sí, mi foco está en video corto vertical para Instagram, Facebook, TikTok y Shorts de Youtube. En otro caso lo podemos charlar pero el precio es fuera de los planes",
+  },
+  {
+    q: "¿Haces packs de edición?",
+    a: "Sí, los packs lo podemos armar en base a la cantidad de videos o lo que necesites.",
+  },
+];
+---
+
+<section class="faq section" id="faq">
+  <div class="container">
+    <div class="faq__header reveal">
+      <p class="label">Preguntas frecuentes</p>
+      <h2 class="faq__title">Dudas comunes.</h2>
+    </div>
+
+    <div class="faq__list">
+      {items.map((item, i) => (
+        <div 
+          class:list={["faq__item", "reveal"]} 
+          style={`transition-delay: ${(i + 1) * 100}ms; animation-delay: ${(i + 1) * 100}ms;`}
+        >
+          <button
+            class="faq__question"
+            aria-expanded="false"
+            aria-controls={`faq-answer-${i}`}
+            id={`faq-btn-${i}`}
+          >
+            <span>{item.q}</span>
+            <span class="faq__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          
+          {/* Le quitamos el atributo 'hidden' inicial para que CSS maneje la animación */}
+          <div
+            class="faq__answer"
+            id={`faq-answer-${i}`}
+            role="region"
+            aria-labelledby={`faq-btn-${i}`}
+          >
+            <p class="faq__answer-text">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+/* Contenedor principal ocupando el alto completo (full-screen) */
+.faq {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: 4rem; 
+}
+
+.faq > .container {
+  width: 100%;
+}
+
+.faq__header {
+  margin-bottom: var(--space-10);
+}
+
+.faq__title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin-top: var(--space-3);
+  color: var(--white);
+}
+
+.faq__list {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.faq__item {
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.faq__item:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.faq__question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: 1.75rem; 
+  font-size: 1.25rem; 
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+  transition: color var(--dur-fast);
+}
+
+.faq__question:hover {
+  color: var(--white);
+}
+
+.faq__icon {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: transform var(--dur-base) var(--ease);
+  transform: scale(1.2); 
+}
+
+.faq__question[aria-expanded="true"] .faq__icon {
+  transform: scale(1.2) rotate(180deg);
+}
+
+/* NUEVO: Animación suave usando CSS Grid */
+.faq__answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  padding-bottom: 0; /* Empieza sin espacio abajo */
+  transition: grid-template-rows 0.4s ease, opacity 0.4s ease, padding-bottom 0.4s ease;
+}
+
+/* Estado abierto: activado cuando el botón hermano tiene aria-expanded="true" */
+.faq__question[aria-expanded="true"] + .faq__answer {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  padding-bottom: 2rem; 
+}
+
+.faq__answer-text {
+  overflow: hidden; /* Fundamental para que el truco del Grid funcione */
+  margin: 0; /* Reseteamos márgenes para evitar saltos en la animación */
+  font-size: 1.125rem; 
+  color: var(--text-2);
+  line-height: 1.7;
+  max-width: 95%; 
+}
+</style>
+
+<script>
+  const questions = document.querySelectorAll<HTMLButtonElement>(".faq__question");
+
+  questions.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+
+      // Cerrar todos primero
+      questions.forEach((other) => {
+        other.setAttribute("aria-expanded", "false");
+      });
+
+      // Abrir el actual si estaba cerrado
+      // La animación la hace 100% CSS al detectar el cambio de este atributo
+      if (!expanded) {
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+</script>

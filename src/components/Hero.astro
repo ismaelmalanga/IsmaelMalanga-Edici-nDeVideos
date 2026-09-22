@@ -1,0 +1,245 @@
+---
+import { SITE, WA_URL, HERO_VIDEO } from "../data/config";
+---
+
+<section class="hero">
+  <div class="container hero__inner">
+    <!-- Columna texto -->
+    <div class="hero__text">
+      <p class="label hero__eyebrow reveal">Editor freelance · Short-form</p>
+      <h1 class="hero__heading reveal delay-100">
+        {SITE.name}<span class="hero__dot">.</span>
+      </h1>
+      <p class="hero__subtitle reveal delay-200">
+        Edición de video <br/>
+        para redes sociales.
+      </p>
+      <p class="hero__body reveal delay-300">
+        Edito Reels, TikToks y Shorts<br/>
+        Para creadores, marcas, agencias y empresas.<br class="hero__br-desktop"/>
+        Storytelling · B-Roll · Motion Graphics · Sound Design 
+      </p>
+      <div class="hero__actions reveal delay-400">
+        <a
+          href={WA_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn--primary"
+        >
+          Quiero trabajar con vos
+        </a>
+        <a href="#trabajos" class="btn btn--ghost">
+          Ver trabajos
+        </a>
+      </div>
+    </div>
+
+    <!-- Columna video -->
+    <div class="hero__video-wrap reveal delay-300">
+      <div class="hero__phone-frame">
+        <video
+          class="hero__video"
+          src={HERO_VIDEO.src}
+          poster={HERO_VIDEO.poster}
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-label="Muestra de edición de video"
+        ></video>
+        <!-- Overlay sutil con el nombre en el video -->
+      </div>
+      <!-- Decoración editorial — línea vertical -->
+      <div class="hero__deco-line" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<style>
+.hero {
+  /* Alineamos con la paleta crema perlada del Navbar */
+  --theme-accent: #EAE6DB; 
+  --theme-glow: rgba(234, 230, 219, 0.15);
+
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--space-16) + 56px); /* header height */
+  padding-bottom: var(--space-16);
+}
+
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+/* ---- Texto ---- */
+.hero__eyebrow {
+  margin-bottom: var(--space-6);
+}
+
+.hero__heading {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-5xl), 7vw, var(--text-7xl));
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: var(--space-6);
+}
+
+.hero__dot {
+  color: var(--theme-accent);
+}
+
+.hero__subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 2.5vw, var(--text-3xl));
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
+
+.hero__body {
+  font-size: var(--text-base);
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: var(--space-10);
+}
+
+.hero__br-desktop { display: inline; }
+
+.hero__actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* ---- Video ---- */
+.hero__video-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero__phone-frame {
+  position: relative;
+  width: min(300px, 80%);
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder visual cuando no hay video */
+.hero__video:not([src]), .hero__video[src=""] {
+  background: var(--bg-3);
+}
+
+.hero__video-badge {
+  position: absolute;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  background: rgba(12,12,11,0.8);
+  backdrop-filter: blur(8px);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.hero__deco-line {
+  position: absolute;
+  right: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.85rem 1.75rem; /* Un poco más grande para el Hero */
+  font-size: var(--text-base);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background: var(--theme-accent);
+  color: #0c0c0b;
+  border: 1px solid var(--theme-accent);
+}
+
+.btn--primary:hover {
+  background: #F4F1EA;
+  box-shadow: 0 8px 24px var(--theme-glow);
+  transform: translateY(-2px);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+
+.btn--ghost:hover {
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--space-12) + 56px);
+    padding-bottom: var(--space-12);
+    align-items: flex-start;
+  }
+
+  .hero__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+
+  .hero__heading {
+    font-size: clamp(var(--text-4xl), 13vw, var(--text-5xl));
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-xl);
+  }
+
+  .hero__video-wrap {
+    order: 1; /* video después del texto en mobile */
+  }
+
+  .hero__text {
+    order: 0;
+  }
+
+  .hero__phone-frame {
+    width: min(240px, 70%);
+  }
+
+  .hero__deco-line { display: none; }
+
+  .hero__br-desktop { display: none; }
+}
+</style>
