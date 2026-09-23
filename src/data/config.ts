@@ -22,7 +22,7 @@ export const VIDEOS = [
 
   {
     id: 1,
-    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789709747/Ismael_Malanga_Editor_de_Videos_2026.mp4",
+    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790131641/Ismael_Malanga_Editor_Final_2026.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789709946/Editor_Ismael_Malanga.png",
     title: "Edición dinámica."
     ,
