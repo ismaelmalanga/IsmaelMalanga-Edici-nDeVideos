@@ -54,6 +54,6 @@ export const VIDEOS = [
 ];
 
 export const HERO_VIDEO = {
-  src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790114211/temporal.mp4",
+  src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790129357/completo.mp4",
   poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1790114276/temp_2.png",
 };
