@@ -19,18 +19,19 @@ export const CONTACT = {
 export const WA_URL = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(CONTACT.whatsappMessage)}`;
 
 export const VIDEOS = [
+
   {
     id: 1,
-    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789710781/KEVIN_SUB.mp4",
-    poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789710719/b83f90ee-3591-4aa4-8318-d72a60f6a40f.png",
-    title: "Edición dinámica (B-Roll básico).",
-  },
-  {
-    id: 2,
     src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789709747/Ismael_Malanga_Editor_de_Videos_2026.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789709946/Editor_Ismael_Malanga.png",
     title: "Edición dinámica."
     ,
+  },
+  {
+    id: 2,
+    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789710781/KEVIN_SUB.mp4",
+    poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789710719/b83f90ee-3591-4aa4-8318-d72a60f6a40f.png",
+    title: "Edición dinámica (B-Roll básico).",
   },
   {
     id: 3,
