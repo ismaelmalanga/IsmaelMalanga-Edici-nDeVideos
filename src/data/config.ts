@@ -47,6 +47,12 @@ export const VIDEOS = [
   },
   {
     id: 5,
+    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790306734/LeanPruebaSonido.mp4",
+    poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1790306930/portada_lea.png",
+    title: "Diseño y animación de outro para contenido audiovisual",
+  },
+  {
+    id: 6,
     src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789711825/Villa_Union.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789712063/villa_2.png",
     title: "Edición dinámica y personalizada al ritmo de la música.",
