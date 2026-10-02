@@ -41,18 +41,24 @@ export const VIDEOS = [
   },
   {
     id: 4,
+    src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790970003/STX_ESPORTS.mp4",
+    poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1790969997/Gemini_Generated_Image_ajz0yzajz0yzajz0.jpg",
+    title: "Edición dinámica para gameplays de equpo esports.",
+  },
+  {
+    id: 5,
     src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789711094/Al_SAMA_RESUMEN_25_A%C3%91OS.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789711147/IMG_1032.jpg",
     title: "Edición personalizada al ritmo de la música.",
   },
   {
-    id: 5,
+    id: 6,
     src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1790306734/LeanPruebaSonido.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1790306930/portada_lea.png",
     title: "Diseño y animación de outro para contenido audiovisual",
   },
   {
-    id: 6,
+    id: 7,
     src: "https://res.cloudinary.com/rryj6c1f/video/upload/v1789711825/Villa_Union.mp4",
     poster: "https://res.cloudinary.com/rryj6c1f/image/upload/v1789712063/villa_2.png",
     title: "Edición dinámica y personalizada al ritmo de la música.",
